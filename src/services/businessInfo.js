@@ -24,7 +24,7 @@ export const getBusinessInfo = async (businessId) => {
         name: data.name || 'Polyshop.lk',
         address: data.address || 'No. 167/B1, Old Tangalle, Kotuwegoda, Matara',
         phone: data.phone || '041 222 3298 / 076 055 6075',
-        email: data.email || 'ceylonglobal.hq@gmail.com',
+        email: data.email || 'polyshop.lk@gmail.com',
         regNo: data.reg_no || '',
       }
       businessInfoCacheExpiry = Date.now() + CACHE_TTL_MS

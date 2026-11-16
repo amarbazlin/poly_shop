@@ -61,19 +61,19 @@ const buildItemRows = (items) =>
     .join('')
 
 // Payment split shown on the bill (cash tendered / balance due)
-const resolvePayment = ({ paymentMethod, total, cashReceived }) => {
+const resolvePayment = ({ paymentMethod, total, cashReceived, deliveryCharges = 0 }) => {
   const method = String(paymentMethod || 'cash').toLowerCase()
 
   if (method === 'cash') {
     const tendered = num(cashReceived) > 0 ? num(cashReceived) : total
-    return { label: 'Cash Received', paid: tendered, balance: Math.max(0, tendered - total) }
+    return { label: 'Cash Received', paid: tendered, balance: Math.max(0, tendered - total - deliveryCharges) }
   }
 
   if (method === 'credit') {
-    return { label: 'Amount Paid', paid: 0, balance: total }
+    return { label: 'Amount Paid', paid: 0, balance: total + deliveryCharges }
   }
 
-  return { label: 'Amount Paid', paid: total, balance: 0 }
+  return { label: 'Amount Paid', paid: total, balance: deliveryCharges }
 }
 
 export const buildBillHtml = ({
@@ -87,18 +87,16 @@ export const buildBillHtml = ({
   subtotal = 0,
   discount = 0,
   total = 0,
+  deliveryCharges = 0,
   paymentMethod = 'cash',
   cashReceived = null,
-  conditions = [
-    'This bill is required for any return or exchange.',
-    'Items can be exchanged only within 15 days from the date of purchase.',
-    'Shopping bags can be provided upon request and will be charged separately.',
-  ],
 } = {}) => {
   // Totals are already final (per-item discounted prices only) — no bill-level
   // discount line is shown, so derive everything from `total`.
   const netAmount   = num(total) > 0 ? num(total) : num(subtotal) - num(discount)
-  const payment     = resolvePayment({ paymentMethod, total: netAmount, cashReceived })
+  const deliveryAmt = num(deliveryCharges)
+  const grandTotal  = netAmount + deliveryAmt
+  const payment     = resolvePayment({ paymentMethod, total: netAmount, cashReceived, deliveryCharges: deliveryAmt })
   const method      = String(paymentMethod || 'cash').toLowerCase()
 
   const conditionsHtml = conditions
@@ -199,9 +197,14 @@ export const buildBillHtml = ({
     margin-top: auto; margin-left: -0.25in; margin-right: -0.25in;
     padding: 0.07in 0.25in 0.08in;
     background: #2b2b2b; color: #fff;
-    display: grid; grid-template-columns: 2.1in auto 1fr; gap: 0 0.12in;
-    align-items: start;
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 0 0.25in;
+    align-items: center;
   }
+  .foot-contact { display: flex; justify-content: space-between; width: 100%; gap: 0.25in; }
+  .foot-item { display: flex; align-items: center; gap: 0.06in; font-size: 8pt; line-height: 1.3; }
+  .foot-item.left { justify-content: flex-start; }
+  .foot-item.right { justify-content: flex-end; }
+  .foot-item span { font-size: 8pt; }
   .cond-head { font-size: 8.5pt; font-weight: 800; line-height: 1.3; white-space: nowrap; }
   .cond-line { font-size: 7pt; line-height: 1.3; margin-bottom: 0.01in; }
   .cond-line:last-child { margin-bottom: 0; }
@@ -257,7 +260,9 @@ export const buildBillHtml = ({
   <div class="totals-wrap">
     <div class="summary">
       <div class="srow"><span>Bill Amount</span><span>${rs(netAmount)}</span></div>
-      <div class="srow net"><span>Net Amount</span><span>${rs(netAmount)}</span></div>
+      <div class="srow"><span>Net Amount</span><span>${rs(netAmount)}</span></div>
+      <div class="srow"><span>Delivery Charges</span><span>${rs(deliveryAmt)}</span></div>
+      <div class="srow net"><span>Grand Total</span><span>${rs(grandTotal)}</span></div>
       <div class="srow"><span>${esc(payment.label)}</span><span>${rs(payment.paid)}</span></div>
       <div class="srow"><span>Balance</span><span>${rs(payment.balance)}</span></div>
     </div>
@@ -265,11 +270,9 @@ export const buildBillHtml = ({
 
   <div class="foot">
     <div class="foot-contact">
-      <div class="foot-item">${ICON_PHONE}<span>Tel : ${esc(business.phone || '')}</span></div>
-      <div class="foot-item">${ICON_MAIL}<span>Email : ${esc(business.email || '')}</span></div>
+      <div class="foot-item left">${ICON_PHONE}<span>Tel : ${esc(business.phone || '')}</span></div>
+      <div class="foot-item right">${ICON_MAIL}<span>Email : ${esc(business.email || '')}</span></div>
     </div>
-    <div class="cond-head">Conditions :</div>
-    <div class="cond-body">${conditionsHtml}</div>
   </div>
 </div>
 </div>`
