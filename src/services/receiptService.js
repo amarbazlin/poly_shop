@@ -199,10 +199,11 @@ export const buildBillHtml = ({
     align-items: center;
   }
   .foot-contact { display: flex; justify-content: space-between; width: 100%; gap: 0.25in; }
-  .foot-item { display: flex; align-items: center; gap: 0.06in; font-size: 8pt; line-height: 1.3; }
+  .foot-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 8pt; line-height: 1.2; }
   .foot-item.left { justify-content: flex-start; }
   .foot-item.right { justify-content: flex-end; }
-  .foot-item span { font-size: 8pt; }
+  .contact-label { font-size: 6.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; }
+  .contact-value { font-size: 9pt; font-weight: 600; color: #fff; text-align: center; }
   .cond-head { font-size: 8.5pt; font-weight: 800; line-height: 1.3; white-space: nowrap; }
   .cond-line { font-size: 7pt; line-height: 1.3; margin-bottom: 0.01in; }
   .cond-line:last-child { margin-bottom: 0; }
@@ -258,7 +259,6 @@ export const buildBillHtml = ({
   <div class="totals-wrap">
     <div class="summary">
       <div class="srow"><span>Bill Amount</span><span>${rs(netAmount)}</span></div>
-      <div class="srow"><span>Net Amount</span><span>${rs(netAmount)}</span></div>
       <div class="srow"><span>Delivery Charges</span><span>${rs(deliveryAmt)}</span></div>
       <div class="srow net"><span>Grand Total</span><span>${rs(grandTotal)}</span></div>
       <div class="srow"><span>${esc(payment.label)}</span><span>${rs(payment.paid)}</span></div>
@@ -268,8 +268,14 @@ export const buildBillHtml = ({
 
   <div class="foot">
     <div class="foot-contact">
-      <div class="foot-item left">${ICON_PHONE}<span>Tel : ${esc(business.phone || '')}</span></div>
-      <div class="foot-item right">${ICON_MAIL}<span>Email : ${esc(business.email || '')}</span></div>
+      <div class="foot-item left">
+        <div class="contact-label">Tel</div>
+        <div class="contact-value">${esc(business.phone || '')}</div>
+      </div>
+      <div class="foot-item right">
+        <div class="contact-label">Email</div>
+        <div class="contact-value">${esc(business.email || '')}</div>
+      </div>
     </div>
   </div>
 </div>
