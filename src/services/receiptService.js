@@ -99,9 +99,7 @@ export const buildBillHtml = ({
   const payment     = resolvePayment({ paymentMethod, total: netAmount, cashReceived, deliveryCharges: deliveryAmt })
   const method      = String(paymentMethod || 'cash').toLowerCase()
 
-  const conditionsHtml = conditions
-    .map((line) => `<div class="cond-line">&bull;&nbsp;${esc(line)}</div>`)
-    .join('')
+  // Conditions section removed per user request — no conditionsHtml
 
   const styles = `
   @page { size: 8.27in 5.85in; margin: 0.28in 0.25in 0.12in; }
