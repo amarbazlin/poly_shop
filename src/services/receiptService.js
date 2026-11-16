@@ -296,6 +296,10 @@ export const buildBillHtml = ({
 const printHtml = (html) => {
   if (typeof document === 'undefined') return
 
+  // Remove any existing print frame first to avoid duplicates
+  const existingFrames = document.querySelectorAll('iframe[title="Bill print frame"]')
+  existingFrames.forEach(f => f.remove())
+
   const frame = document.createElement('iframe')
   frame.setAttribute('aria-hidden', 'true')
   frame.setAttribute('title', 'Bill print frame')
@@ -310,20 +314,31 @@ const printHtml = (html) => {
 
   const triggerPrint = () => {
     try {
-      win.focus()
-      win.print()
+      // Small delay to ensure the iframe is fully rendered
+      setTimeout(() => {
+        try {
+          win.focus()
+          win.print()
+        } catch (err) {
+          console.error('Bill printing failed:', err)
+        }
+      }, 500)
     } catch (err) {
       console.error('Bill printing failed:', err)
     } finally {
-      // Give the browser time to hand the job over to the printer driver
-      setTimeout(() => frame.remove(), 3000)
+      // Clean up after print attempt
+      setTimeout(() => {
+        try { frame.remove() } catch (e) {}
+      }, 3000)
     }
   }
 
   if (doc.readyState === 'complete') {
-    setTimeout(triggerPrint, 150)
+    setTimeout(triggerPrint, 100)
   } else {
-    frame.addEventListener('load', () => setTimeout(triggerPrint, 150), { once: true })
+    frame.addEventListener('load', () => {
+      setTimeout(triggerPrint, 100)
+    })
   }
 }
 

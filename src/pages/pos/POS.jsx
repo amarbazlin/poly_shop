@@ -314,7 +314,9 @@ const POS = () => {
       try {
         await printSaleReceipt({ businessId, ...receipt })
       } catch (printErr) {
-        console.error('Bill printing failed:', printErr)
+        console.error('POS: Bill printing failed:', printErr)
+        // Show error to user
+        setError('Failed to open bill preview. Please check your printer settings.')
       }
     } catch (err) {
       setError(err.message || 'Checkout failed. Please try again.')
