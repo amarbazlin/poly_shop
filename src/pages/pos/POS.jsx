@@ -82,7 +82,7 @@ const POS = () => {
       try {
         const [productsRes, customersRes] = await Promise.all([
           (() => {
-            // New products always carry business_id = 2 (see AddProduct), so
+            // New products carry the default business_id (see AddProduct), so
             // scope the POS catalogue the same way — otherwise legacy NULL rows
             // would leak back in alongside the fixed ones.
             let q = supabase

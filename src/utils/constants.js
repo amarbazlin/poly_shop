@@ -1,8 +1,7 @@
-// Single-business deployment: Ceylon Platinum Trading.
-// Every product row must carry this tenant id (products.business_id) or the
-// business-scoped Inventory list will never show it. Used as the fallback
-// whenever the signed-in profile has no business linked yet.
-export const DEFAULT_BUSINESS_ID = 2
+// Multi-business deployment: default fallback business ID for new users
+// whose profile has no business_id linked yet. Change this when onboarding
+// a new business (currently id 3 for Polyshop).
+export const DEFAULT_BUSINESS_ID = 3
 
 // App info
 export const APP_NAME = 'HardwareAI'

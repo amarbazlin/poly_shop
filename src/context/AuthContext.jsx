@@ -70,9 +70,8 @@ export const AuthProvider = ({ children }) => {
     signOut,
     isAdmin: profile?.role === 'admin',
     isManager: profile?.role === 'manager' || profile?.role === 'admin',
-    // Single-shop deployment (Ceylon Platinum Trading, id 2): every product row
-    // is tenant-scoped, so a missing link must fall back to this business
-    // instead of NULL — otherwise new products are rejected or invisible.
+    // Multi-business deployment: fall back to default business (id 3) when
+    // the signed-in profile has no business linked yet.
     businessId: profile?.business_id ?? DEFAULT_BUSINESS_ID,
   }
 

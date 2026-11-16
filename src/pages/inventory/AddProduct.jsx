@@ -37,7 +37,7 @@ const AddProduct = () => {
     // Every product is tenant-scoped: products.business_id filters the Inventory
     // list, so a row without it is rejected (NOT NULL) or silently invisible.
     // The signed-in profile should carry the business, but if it hasn't loaded
-    // (or was never linked) fall back to this shop's business id (2) instead of
+    // (or was never linked) fall back to the default business id (3 for Polyshop) instead of
     // sending NULL — a NULL insert is exactly the bug being fixed.
     const effectiveBusinessId = businessId ?? DEFAULT_BUSINESS_ID
 
