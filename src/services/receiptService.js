@@ -198,10 +198,8 @@ export const buildBillHtml = ({
     display: grid; grid-template-columns: 1fr auto 1fr; gap: 0 0.25in;
     align-items: center;
   }
-  .foot-contact { display: flex; justify-content: space-between; width: 100%; gap: 0.25in; }
+  .foot-contact { display: flex; justify-content: center; width: 100%; gap: 0.5in; }
   .foot-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 8pt; line-height: 1.2; }
-  .foot-item.left { justify-content: flex-start; }
-  .foot-item.right { justify-content: flex-end; }
   .contact-label { font-size: 6.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; }
   .contact-value { font-size: 9pt; font-weight: 600; color: #fff; text-align: center; }
   .cond-head { font-size: 8.5pt; font-weight: 800; line-height: 1.3; white-space: nowrap; }
