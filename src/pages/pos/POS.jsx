@@ -64,6 +64,7 @@ const POS = () => {
   const [cart, setCart] = useState([])           // {product_id, name, code, unit_price, discount, quantity, stock, cost_price}
   const [paymentMethod, setPaymentMethod] = useState('cash')
   const [cashReceived, setCashReceived] = useState('')   // cash tendered by the customer
+  const [deliveryCharges, setDeliveryCharges] = useState('')  // delivery fee
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -297,6 +298,7 @@ const POS = () => {
         subtotal,
         discount: 0,
         total,
+        deliveryCharges: parseFloat(deliveryCharges) || 0,
         paymentMethod,
         cashReceived: paymentMethod === 'cash' ? tenderedCash : null,
       }
@@ -543,6 +545,22 @@ const POS = () => {
                 <span className="pos-change">Change {formatLKR(changeDue)}</span>
               </div>
             )}
+
+            {/* Delivery charges */}
+            <div className="pos-cash-row">
+              <label htmlFor="pos-delivery-charges">Delivery charges (Rs.)</label>
+              <input
+                id="pos-delivery-charges"
+                type="number"
+                min="0"
+                step="0.01"
+                value={deliveryCharges}
+                onChange={e => setDeliveryCharges(e.target.value)}
+                placeholder="0.00"
+                inputMode="decimal"
+              />
+              <span className="pos-change">Added to Total</span>
+            </div>
           </div>
           </div>
 
@@ -553,7 +571,10 @@ const POS = () => {
             <div className="pos-section-title">4 · Summary</div>
             <div className="pos-totals">
               <div><span>Subtotal</span><strong>{formatLKR(subtotal)}</strong></div>
-              <div className="pos-total-row"><span>Total</span><strong>{formatLKR(total)}</strong></div>
+              {parseFloat(deliveryCharges) > 0 && (
+                <div><span>Delivery Charges</span><strong>{formatLKR(parseFloat(deliveryCharges))}</strong></div>
+              )}
+              <div className="pos-total-row"><span>Total Due</span><strong>{formatLKR(total + (parseFloat(deliveryCharges) || 0))}</strong></div>
               {cart.length > 0 && (
                 <div className="pos-profit-row"><span>Est. profit</span><strong>{formatLKR(cartProfit)}</strong></div>
               )}

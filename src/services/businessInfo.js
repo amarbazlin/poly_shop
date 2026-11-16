@@ -39,7 +39,7 @@ export const getBusinessInfo = async (businessId) => {
     name:    import.meta.env.VITE_BUSINESS_NAME    || 'Polyshop.lk',
     address: import.meta.env.VITE_BUSINESS_ADDRESS || 'No. 167/B1, Old Tangalle, Kotuwegoda, Matara',
     phone:   import.meta.env.VITE_BUSINESS_PHONE   || '041 222 3298 / 076 055 6075',
-    email:   import.meta.env.VITE_BUSINESS_EMAIL   || 'ceylonglobal.hq@gmail.com',
+    email:   import.meta.env.VITE_BUSINESS_EMAIL   || 'polyshop.lk@gmail.com',
     regNo:   import.meta.env.VITE_BUSINESS_REG     || '',
   }
 }
