@@ -21,7 +21,7 @@ export const getBusinessInfo = async (businessId) => {
 
     if (data) {
       businessInfoCache = {
-        name: data.name || 'Ceylon Platinum Trading (Pvt) Ltd.',
+        name: data.name || 'Polyshop.lk',
         address: data.address || 'No. 167/B1, Old Tangalle, Kotuwegoda, Matara',
         phone: data.phone || '041 222 3298 / 076 055 6075',
         email: data.email || 'ceylonglobal.hq@gmail.com',
@@ -36,7 +36,7 @@ export const getBusinessInfo = async (businessId) => {
 
   // Fallback to env vars
   return {
-    name:    import.meta.env.VITE_BUSINESS_NAME    || 'Ceylon Platinum Trading (Pvt) Ltd.',
+    name:    import.meta.env.VITE_BUSINESS_NAME    || 'Polyshop.lk',
     address: import.meta.env.VITE_BUSINESS_ADDRESS || 'No. 167/B1, Old Tangalle, Kotuwegoda, Matara',
     phone:   import.meta.env.VITE_BUSINESS_PHONE   || '041 222 3298 / 076 055 6075',
     email:   import.meta.env.VITE_BUSINESS_EMAIL   || 'ceylonglobal.hq@gmail.com',
