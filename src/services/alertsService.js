@@ -9,6 +9,7 @@ const buildQuery = (params = {}) => {
   if (params.start_date) query.set('start_date', params.start_date)
   if (params.end_date) query.set('end_date', params.end_date)
   if (params.limit) query.set('limit', String(params.limit))
+  if (params.business_id) query.set('business_id', String(params.business_id))
   return query.toString()
 }
 
