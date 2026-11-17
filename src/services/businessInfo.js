@@ -23,7 +23,7 @@ export const getBusinessInfo = async (businessId) => {
       businessInfoCache = {
         name: data.name || 'Polyshop.lk',
         address: data.address || 'No. 167/B1, Old Tangalle, Kotuwegoda, Matara',
-        phone: data.phone || '041 222 3298 / 076 055 6075',
+        phone: data.phone || '0743224460',
         email: data.email || 'polyshop.lk@gmail.com',
         regNo: data.reg_no || '',
       }
@@ -38,7 +38,7 @@ export const getBusinessInfo = async (businessId) => {
   return {
     name:    import.meta.env.VITE_BUSINESS_NAME    || 'Polyshop.lk',
     address: import.meta.env.VITE_BUSINESS_ADDRESS || 'No. 167/B1, Old Tangalle, Kotuwegoda, Matara',
-    phone:   import.meta.env.VITE_BUSINESS_PHONE   || '041 222 3298 / 076 055 6075',
+    phone:   import.meta.env.VITE_BUSINESS_PHONE   || '0743224460',
     email:   import.meta.env.VITE_BUSINESS_EMAIL   || 'polyshop.lk@gmail.com',
     regNo:   import.meta.env.VITE_BUSINESS_REG     || '',
   }

@@ -167,9 +167,9 @@ const drawFooter = (doc, notes = '', business) => {
   doc.setFontSize(7)
   doc.setFont('helvetica', 'normal')
   doc.setTextColor(120, 120, 120)
-  if (notes) doc.text(`Notes: ${notes}`, 14, y + 8)
-  doc.text('Thank you for your business!', 105, y + 14, { align: 'center' })
-  doc.text(`${business.name} | ${business.phone}`, 105, y + 19, { align: 'center' })
+  doc.text(`${business.name}`, 105, y + 13, { align: 'center' })
+  doc.text(`Tel: ${business.phone}`, 105, y + 18, { align: 'center' })
+  doc.text(`Email: ${business.email}`, 105, y + 22, { align: 'center' })
 }
 
 // ── PUBLIC API ────────────────────────────────────────────────────────────────
