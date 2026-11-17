@@ -94,13 +94,15 @@ export const customerService = {
   },
 
   // ── Lookup helpers ────────────────────────────────────────────────────────
-  search: async (term) => {
-    const { data, error } = await supabase
+  search: async (term, businessId = null) => {
+    let q = supabase
       .from('customers')
       .select('id, name, phone, customer_type, credit_limit, current_balance, price_tiers(discount_percent)')
       .eq('status', 'active')
       .ilike('name', `%${term}%`)
       .limit(10)
+    if (businessId) q = q.eq('business_id', businessId)
+    const { data, error } = await q
     if (error) throw error
     return data
   },

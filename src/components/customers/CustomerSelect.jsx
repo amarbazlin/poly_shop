@@ -1,5 +1,6 @@
 // CustomerSelect.jsx — searchable dropdown for use in sale/delivery forms
 import React, { useState, useEffect, useRef } from 'react'
+import { useAuth } from '../../context/AuthContext'
 import { Search, User, ChevronDown, X } from 'lucide-react'
 import { customerService } from '../../services/customerService'
 
@@ -40,13 +41,16 @@ export const CreditStatusBadge = ({ creditLimit, currentBalance }) => {
 
 
 
-export const CustomerSelect = ({ value, onChange, placeholder = 'Select customer (optional)' }) => {
+export const CustomerSelect = ({ value, onChange, placeholder = 'Select customer (optional)', businessId }) => {
   const [open,      setOpen]      = useState(false)
   const [query,     setQuery]     = useState('')
   const [results,   setResults]   = useState([])
   const [selected,  setSelected]  = useState(value || null)
   const [loading,   setLoading]   = useState(false)
   const wrapRef = useRef(null)
+
+  const { businessId: authBusinessId } = useAuth()
+  const _businessId = businessId || authBusinessId
 
   useEffect(() => {
     const handleOutside = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false) }
@@ -59,12 +63,12 @@ export const CustomerSelect = ({ value, onChange, placeholder = 'Select customer
     setLoading(true)
     const timer = setTimeout(async () => {
       try {
-        const data = await customerService.search(query)
+        const data = await customerService.search(query, _businessId)
         setResults(data || [])
       } finally { setLoading(false) }
     }, 250)
     return () => clearTimeout(timer)
-  }, [query])
+  }, [query, _businessId])
 
   const handleSelect = (customer) => {
     setSelected(customer)
