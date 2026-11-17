@@ -88,11 +88,13 @@ def _build_alert(
     *,
     product_id: Optional[int] = None,
     related_purchase_order_id: Optional[int] = None,
+    business_id: Optional[int] = None,
 ) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "alert_type": alert_type,
         "message": message,
         "severity": severity,
+        "business_id": business_id,
     }
     if product_id is not None:
         payload["product_id"] = product_id

@@ -17,14 +17,13 @@ const normalizeList = (value) => {
 const severityRank = { critical: 4, high: 3, medium: 2, low: 1 }
 
 const applyFilters = (query, req) => {
-  const { resolved, type, severity, start_date, end_date, limit = 50 } = req.query
+  const { resolved, type, severity, start_date, end_date, limit = 50, business_id } = req.query
   const types = normalizeList(type)
   const severities = normalizeList(severity)
 
-  // NOTE: the alerts table has no business_id column (single-business
-  // deployment, RLS grants all authenticated users read access), so we must
-  // NOT filter on req.businessId here — doing so makes the query fail with a
-  // column-not-found error and breaks the whole Alerts page.
+  // NOTE: the alerts table has a business_id column now (multi-tenant support),
+  // so we filter on it to isolate alerts per business.
+  if (business_id) query = query.eq('business_id', business_id)
   if (resolved !== undefined) query = query.eq('resolved', resolved === 'true')
   if (types.length > 0) query = query.in('alert_type', types)
   if (severities.length > 0) query = query.in('severity', severities)

@@ -109,6 +109,7 @@ CREATE TABLE IF NOT EXISTS purchase_items (
 -- Alerts
 CREATE TABLE IF NOT EXISTS alerts (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    business_id BIGINT REFERENCES businesses(id) ON DELETE CASCADE,
     product_id BIGINT REFERENCES products(id) ON DELETE CASCADE,
     related_purchase_order_id BIGINT REFERENCES purchases(id) ON DELETE CASCADE,
     alert_type TEXT NOT NULL CHECK (alert_type IN ('low_stock','out_of_stock','price_anomaly','dead_stock','reorder','late_delivery')),
