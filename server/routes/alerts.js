@@ -74,13 +74,16 @@ router.get('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   const supabase = getSupabase(req)
   const { id } = req.params
+  const businessId = req.query.business_id ?? req.businessId
 
   try {
-    const { error } = await supabase
+    let query = supabase
       .from('alerts')
       .update({ resolved: true })
       .eq('id', id)
+    if (businessId) query = query.eq('business_id', businessId)
 
+    const { error } = await query
     if (error) throw error
     res.json({ success: true })
   } catch (err) {
@@ -91,15 +94,16 @@ router.patch('/:id', async (req, res) => {
 
 router.post('/resolve-all', async (req, res) => {
   const supabase = getSupabase(req)
+  const businessId = req.query.business_id ?? req.businessId
 
   try {
     let query = supabase
       .from('alerts')
       .update({ resolved: true })
       .eq('resolved', false)
+    if (businessId) query = query.eq('business_id', businessId)
 
     const { error } = await query
-
     if (error) throw error
     res.json({ success: true })
   } catch (err) {

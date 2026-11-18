@@ -12,8 +12,8 @@ export const useAlerts = () => {
     setLoading(true)
     try {
       const [data, count] = await Promise.all([
-        alertsService.getAll({ resolved: false }),
-        alertsService.getUnresolvedCount(),
+        alertsService.getAll({ resolved: false, business_id: businessId }),
+        alertsService.getUnresolvedCount({ business_id: businessId }),
       ])
       setAlerts(data || [])
       setUnresolvedCount(count)
@@ -27,12 +27,12 @@ export const useAlerts = () => {
   useEffect(() => { fetchAlerts() }, [])
 
   const resolveAlert = async (id) => {
-    await alertsService.resolve(id)
+    await alertsService.resolve(id, { business_id: businessId })
     await fetchAlerts()
   }
 
   const resolveAll = async () => {
-    await alertsService.resolveAll()
+    await alertsService.resolveAll({ business_id: businessId })
     await fetchAlerts()
   }
 

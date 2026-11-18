@@ -45,6 +45,7 @@ const directQuery = async (params = {}) => {
   }
   if (params.start_date) query = query.gte('created_at', params.start_date)
   if (params.end_date) query = query.lte('created_at', `${params.end_date}T23:59:59.999Z`)
+  if (params.business_id) query = query.eq('business_id', params.business_id)
   query = query.limit(Number(params.limit) || 50)
 
   const { data, error } = await query
@@ -69,10 +70,11 @@ export const alertsService = {
     }
   },
 
-  getUnresolvedCount: async () => {
+  getUnresolvedCount: async (params = {}) => {
     try {
-      const { count } = await fetchJson('/alerts/count')
-      return count || 0
+      const query = buildQuery(params)
+      const json = await fetchJson(`/alerts/count${query ? `?${query}` : ''}`)
+      return json.count || 0
     } catch (err) {
       const { count, error } = await supabase
         .from('alerts')
@@ -83,12 +85,14 @@ export const alertsService = {
     }
   },
 
-  resolve: async (id) => {
-    await fetchJson(`/alerts/${id}`, { method: 'PATCH' })
+  resolve: async (id, params = {}) => {
+    const query = buildQuery(params)
+    await fetchJson(`/alerts/${id}${query ? `?${query}` : ''}`, { method: 'PATCH' })
   },
 
-  resolveAll: async () => {
-    await fetchJson('/alerts/resolve-all', { method: 'POST' })
+  resolveAll: async (params = {}) => {
+    const query = buildQuery(params)
+    await fetchJson(`/alerts/resolve-all${query ? `?${query}` : ''}`, { method: 'POST' })
   },
 
   // Runs the unified alert engine (Python backend) — recomputes low stock,

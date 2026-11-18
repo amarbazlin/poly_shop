@@ -103,15 +103,17 @@ def _build_alert(
     return payload
 
 
-def _fetch_active_products(client) -> list[dict[str, Any]]:
-    result = (
+def _fetch_active_products(client, business_id: Optional[int] = None) -> list[dict[str, Any]]:
+    query = (
         client.table("products")
         .select(
             "id, product_name, product_code, quantity, reorder_level, cost_price, status, suppliers ( supplier_name, average_delivery_days )"
         )
         .eq("status", "active")
-        .execute()
     )
+    if business_id:
+        query = query.eq("business_id", business_id)
+    result = query.execute()
     return result.data or []
 
 
@@ -142,29 +144,33 @@ def _fetch_dead_stock_product_ids(client) -> set[int]:
     return sold_ids
 
 
-def _fetch_overdue_purchase_orders(client) -> list[dict[str, Any]]:
-    result = (
+def _fetch_overdue_purchase_orders(client, business_id: Optional[int] = None) -> list[dict[str, Any]]:
+    query = (
         client.table("purchases")
         .select("id, status, expected_delivery_date, suppliers ( supplier_name )")
-        .execute()
     )
+    if business_id:
+        query = query.eq("business_id", business_id)
+    result = query.execute()
     return [row for row in (result.data or []) if row.get("expected_delivery_date")]
 
 
 SUPPLIER_CREDIT_WARNING_DAYS = (7, 3, 1)
 
 
-def _fetch_unpaid_credit_purchases(client) -> list[dict[str, Any]]:
+def _fetch_unpaid_credit_purchases(client, business_id: Optional[int] = None) -> list[dict[str, Any]]:
     """Unpaid/partially-paid credit purchases with paid sums from purchase_payments."""
-    result = (
+    query = (
         client.table("purchases")
         .select(
             "id, invoice_number, total_amount, payment_type, due_date, created_at, "
             "suppliers ( supplier_name )"
         )
         .eq("payment_type", "credit")
-        .execute()
     )
+    if business_id:
+        query = query.eq("business_id", business_id)
+    result = query.execute()
     purchases = [p for p in (result.data or []) if p.get("payment_type") == "credit"]
     if not purchases:
         return []
@@ -234,9 +240,12 @@ def _late_delivery_severity(days_overdue: int) -> str:
     return "medium"
 
 
-def generate_alerts(auth_token: Optional[str] = None) -> dict[str, Any]:
+def generate_alerts(
+    auth_token: Optional[str] = None,
+    business_id: Optional[int] = None,
+) -> dict[str, Any]:
     client = _create_client(auth_token)
-    products = _fetch_active_products(client)
+    products = _fetch_active_products(client, business_id)
     existing_alerts = _fetch_existing_alerts(client)
     existing_by_key = {_alert_key(alert): alert for alert in existing_alerts}
 
@@ -263,6 +272,7 @@ def generate_alerts(auth_token: Optional[str] = None) -> dict[str, Any]:
                 f"{display_name} is out of stock. Reorder immediately.",
                 _stockout_severity(quantity),
                 product_id=product_id,
+                business_id=business_id,
             )
             desired_alerts.append(alert)
             desired_keys.add(_alert_key(alert))
@@ -274,6 +284,7 @@ def generate_alerts(auth_token: Optional[str] = None) -> dict[str, Any]:
                 f"{display_name} is at {quantity:g} units, at or below reorder level {reorder_level:g}.",
                 _low_stock_severity(quantity, reorder_level),
                 product_id=product_id,
+                business_id=business_id,
             )
             desired_alerts.append(alert)
             desired_keys.add(_alert_key(alert))
@@ -286,12 +297,13 @@ def generate_alerts(auth_token: Optional[str] = None) -> dict[str, Any]:
                 f"{display_name} has had no sales in the last {DEAD_STOCK_LOOKBACK_DAYS} days. {quantity:g} units remain tied up (about LKR {inventory_value:,.2f}).",
                 _dead_stock_severity(inventory_value),
                 product_id=product_id,
+                business_id=business_id,
             )
             desired_alerts.append(alert)
             desired_keys.add(_alert_key(alert))
 
     today = datetime.now(timezone.utc).date()
-    for po in _fetch_overdue_purchase_orders(client):
+    for po in _fetch_overdue_purchase_orders(client, business_id):
         po_id = _to_int(po.get("id"))
         if not po_id:
             continue
@@ -310,6 +322,7 @@ def generate_alerts(auth_token: Optional[str] = None) -> dict[str, Any]:
             f"PO #{po_id} for {supplier_name} is {days_overdue} days overdue (expected {expected_delivery_date.isoformat()}).",
             _late_delivery_severity(days_overdue),
             related_purchase_order_id=po_id,
+            business_id=business_id,
         )
         desired_alerts.append(alert)
         desired_keys.add(_alert_key(alert))
